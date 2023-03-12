@@ -3,10 +3,10 @@
 // --- VPC Network Configuration ---
 vpc_cidr = "10.0.0.0/16"
 public_vswitchs_map = {
-  "us-east-1a" = 1
+  "cn-hongkong-d" = 1
 }
 private_vswitchs_map = {
-  "us-east-1a" = 2
+  "cn-hongkong-d" = 2
 }
 vswitchs_bit_length = 8
 
@@ -16,6 +16,7 @@ gateway_instance_type = "ecs.g5ne.xlarge"
 key_name = "key"
 allocate_and_associate_eip = true
 volume_size = 100
+disk_category = "cloud_efficiency"
 ram_role_name = "role_name"
 instance_tags = {
   key1 = "value1"
@@ -23,7 +24,7 @@ instance_tags = {
 }
 
 // --- Check Point Settings ---
-gateway_version = "R81-BYOL"
+gateway_version = "R81.20-BYOL"
 admin_shell = "/bin/bash"
 gateway_SICKey = "12345678"
 gateway_password_hash = "12345678"

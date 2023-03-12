@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Deploys a Check Point Cluster into an existing VPC (20221229)
+Description: Deploys a Check Point Cluster into an existing VPC (20221123)
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -245,6 +245,15 @@ Parameters:
     Type: String
     Default: R81.20-BYOL
     AllowedValues:
+      - R80.40-BYOL
+      - R80.40-PAYG-NGTP
+      - R80.40-PAYG-NGTX
+      - R81-BYOL
+      - R81-PAYG-NGTP
+      - R81-PAYG-NGTX
+      - R81.10-BYOL
+      - R81.10-PAYG-NGTP
+      - R81.10-PAYG-NGTX
       - R81.20-BYOL
       - R81.20-PAYG-NGTP
       - R81.20-PAYG-NGTX
@@ -535,7 +544,7 @@ Resources:
             - !Join ['', ['    pwd_hash="$(echo ', 'Fn::Base64': !Ref GatewayPasswordHash, ')"']]
             - !Join ['', ['    bootstrap="$(echo ', 'Fn::Base64': !Ref GatewayBootstrapScript, ')"']]
             - !Sub ['    version=${Version}', {Version: !Select [0, !Split ['-', !Ref GatewayVersion]]}]
-            - '    python3 /etc/cloud_config.py enableCloudWatch=\"${cw}\" waitHandle=\"${wait_handle}\" sicKey=\"${sic}\" installationType=\"cross-az-cluster\" osVersion=\"${version}\" allowUploadDownload=\"${allow_info}\" templateVersion=\"20221229\" templateName=\"cross_az_cluster\" shell=\"${admin_shell}\" enableInstanceConnect=\"${eic}\" hostName=\"${hostname}\" ntpPrimary=\"${ntp1}\" ntpSecondary=\"${ntp2}\" passwordHash=\"${pwd_hash}\" elasticIp=\"${eip}\" otherMemberIp=\"${other_member_ip}\" clusterIp=\"${cluster_ip}\" secondaryIp=\"${secondary_ip}\" bootstrapScript64=\"${bootstrap}\"'
+            - '    python3 /etc/cloud_config.py enableCloudWatch=\"${cw}\" waitHandle=\"${wait_handle}\" sicKey=\"${sic}\" installationType=\"geo-cluster\" osVersion=\"${version}\" allowUploadDownload=\"${allow_info}\" templateVersion=\"20221123\" templateName=\"cross_az_cluster\" shell=\"${admin_shell}\" enableInstanceConnect=\"${eic}\" hostName=\"${hostname}\" ntpPrimary=\"${ntp1}\" ntpSecondary=\"${ntp2}\" passwordHash=\"${pwd_hash}\" elasticIp=\"${eip}\" otherMemberIp=\"${other_member_ip}\" clusterIp=\"${cluster_ip}\" secondaryIp=\"${secondary_ip}\" bootstrapScript64=\"${bootstrap}\"'
   MemberBInstance:
     Type: AWS::EC2::Instance
     DependsOn: [MemberBExternalInterface, MemberBInternalInterface, ClusterPublicAddress, MemberAInternalInterface]
@@ -580,7 +589,7 @@ Resources:
             - !Join ['', ['    pwd_hash="$(echo ', 'Fn::Base64': !Ref GatewayPasswordHash, ')"']]
             - !Join ['', ['    bootstrap="$(echo ', 'Fn::Base64': !Ref GatewayBootstrapScript, ')"']]
             - !Sub ['    version=${Version}', {Version: !Select [0, !Split ['-', !Ref GatewayVersion]]}]
-            - '    python3 /etc/cloud_config.py enableCloudWatch=\"${cw}\" waitHandle=\"${wait_handle}\" sicKey=\"${sic}\" installationType=\"cross-az-cluster\" osVersion=\"${version}\" allowUploadDownload=\"${allow_info}\" templateVersion=\"20221229\" templateName=\"cross_az_cluster\" shell=\"${admin_shell}\" enableInstanceConnect=\"${eic}\" hostName=\"${hostname}\" ntpPrimary=\"${ntp1}\" ntpSecondary=\"${ntp2}\" passwordHash=\"${pwd_hash}\" elasticIp=\"${eip}\" otherMemberIp=\"${other_member_ip}\" clusterIp=\"${cluster_ip}\" secondaryIp=\"${secondary_ip}\" bootstrapScript64=\"${bootstrap}\"'
+            - '    python3 /etc/cloud_config.py enableCloudWatch=\"${cw}\" waitHandle=\"${wait_handle}\" sicKey=\"${sic}\" installationType=\"geo-cluster\" osVersion=\"${version}\" allowUploadDownload=\"${allow_info}\" templateVersion=\"20221123\" templateName=\"cross_az_cluster\" shell=\"${admin_shell}\" enableInstanceConnect=\"${eic}\" hostName=\"${hostname}\" ntpPrimary=\"${ntp1}\" ntpSecondary=\"${ntp2}\" passwordHash=\"${pwd_hash}\" elasticIp=\"${eip}\" otherMemberIp=\"${other_member_ip}\" clusterIp=\"${cluster_ip}\" secondaryIp=\"${secondary_ip}\" bootstrapScript64=\"${bootstrap}\"'
 Outputs:
   ClusterPublicAddress:
     Description: The public address of the cluster.
@@ -624,10 +633,10 @@ Outputs:
     Value: !Join ['', ['https://', !Ref MemberBPublicAddress]]
   MemberBPrivateExternalAddress:
     Description: The primary external private address of member B.
-    Value: !GetAtt MemberBExternalInterface.PrimaryPrivateIpAddress
+    Value: !GetAtt MemberAExternalInterface.PrimaryPrivateIpAddress
   MemberBPrivateAliasAddress:
     Description: The secondary external private IP address of Member B.
-    Value: !Select [0, !GetAtt MemberBExternalInterface.SecondaryPrivateIpAddresses]
+    Value: !Select [0, !GetAtt MemberAExternalInterface.SecondaryPrivateIpAddresses]
   MemberBPrivateInternalAddress:
     Description: The private Internal address of member B.
-    Value: !GetAtt MemberBInternalInterface.PrimaryPrivateIpAddress
+    Value: !GetAtt MemberAInternalInterface.PrimaryPrivateIpAddress
